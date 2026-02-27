@@ -31,11 +31,13 @@
       --radius: 18px;
       --radius-lg: 22px;
 
-      /* Ajustements demandés */
-      --previewScale: 1.10;         /* apercu un peu plus petit */
-      --instTitle: 23px;            /* un peu plus grand */
-      --instBody: 19px;           /* un peu plus grand */
-      --instLine: 1.35;             /* + lisible + remplit mieux */
+      /* Aperçu : plus petit (tu peux ajuster) */
+      --previewScale: 1.06;
+
+      /* Instructions (dans la fiche) */
+      --instTitle: 23px;
+      --instBody: 19px;
+      --instLine: 1.35;
     }
 
     *{ box-sizing:border-box; }
@@ -238,9 +240,7 @@
       border-color: var(--brand);
       color: #fff;
     }
-    .btn:hover{
-      filter: brightness(0.98);
-    }
+    .btn:hover{ filter: brightness(0.98); }
     .helper{
       margin-top: 8px;
       font-size: 12px;
@@ -276,12 +276,12 @@
     .previewScaled{
       transform: scale(var(--previewScale));
       transform-origin: top left;
-      width: calc(1080px * 1); /* base */
+      width: 1080px;
     }
 
     /* Export sheet (exact capture) */
     .sheet{
-      width: 1080px;              /* demandé */
+      width: 1080px;
       background: #fff;
       border-radius: 26px;
       border: 1px solid rgba(17,17,17,.10);
@@ -327,9 +327,7 @@
       color: rgba(17,17,17,.60);
       line-height: 1.35;
     }
-    .sheetNote b{
-      color: rgba(17,17,17,.78);
-    }
+    .sheetNote b{ color: rgba(17,17,17,.78); }
 
     .sheetBottom{
       display:grid;
@@ -343,7 +341,7 @@
       border-radius: 22px;
       padding: 18px;
       background: #fff;
-      min-height: 520px; /* base */
+      min-height: 520px;
     }
 
     .diagramBox{
@@ -360,17 +358,17 @@
     .instBox{
       display:flex;
       flex-direction:column;
-      gap: 10px;
     }
 
     .instList{
       font-size: var(--instBody);
       line-height: var(--instLine);
       color: rgba(17,17,17,.90);
+      height: 100%;
+      display:flex;
+      flex-direction:column;
     }
-    .instItem{
-      margin-bottom: 10px;
-    }
+    .instItem{ margin-bottom: 10px; }
     .instItem b{
       display:inline-block;
       font-size: var(--instTitle);
@@ -384,10 +382,6 @@
       margin: 10px 0 10px;
     }
 
-    /* IMPORTANT: on SUPPRIME le 2e "Important" (celui du bas) => plus de bloc duplicate */
-    /* On garde uniquement la note sous le tableau. */
-
-    /* Small polish */
     .mutedSmall{
       color: var(--muted);
       font-size: 12px;
@@ -419,9 +413,6 @@
             <img src="assets/btn-top.png" alt="Haut / Robe">
           </button>
         </div>
-        <div class="helper" style="margin-top:14px;">
-          Pour l’instant : <b>Pantalon</b> est prêt. <b>Haut / Robe</b> arrive après.
-        </div>
       </div>
     </section>
 
@@ -450,13 +441,13 @@
                   <th>Entrejambe (cm)</th>
                 </tr>
               </thead>
-              <tbody id="inputBody"></tbody>
+              <tbody id="inputBodyPants"></tbody>
             </table>
           </div>
 
           <div class="actions">
-            <button class="btn btnPrimary" id="downloadBtn">Télécharger la fiche</button>
-            <button class="btn" id="clearBtn">Vider les cases</button>
+            <button class="btn btnPrimary" id="downloadBtnPants">Télécharger la fiche</button>
+            <button class="btn" id="clearBtnPants">Vider les cases</button>
           </div>
 
           <div class="helper">
@@ -472,9 +463,8 @@
           </div>
 
           <div class="previewFrame">
-            <div class="previewScaled" id="previewScaled">
-              <!-- IMPORTANT: le "sheet" est EXACTEMENT ce qu’on exporte -->
-              <div class="sheet" id="sheet">
+            <div class="previewScaled">
+              <div class="sheet" id="sheetPants">
                 <div class="sheetTitle">Guide des tailles</div>
 
                 <div class="sheetTableWrap">
@@ -489,11 +479,10 @@
                         <th>Entrejambe (cm)</th>
                       </tr>
                     </thead>
-                    <tbody id="sheetBody"></tbody>
+                    <tbody id="sheetBodyPants"></tbody>
                   </table>
                 </div>
 
-                <!-- ON GARDE UNIQUEMENT CET IMPORTANT (sous le tableau) -->
                 <div class="sheetNote">
                   <b>Important :</b> Les mesures sont prises à plat. Pour obtenir le tour complet, multipliez par 2.<br>
                   Une variation de 1 à 2 cm peut être constatée.
@@ -505,7 +494,7 @@
                   </div>
 
                   <div class="sheetBox instBox">
-                    <div class="instList" id="instList">
+                    <div class="instList">
                       <div class="instItem">
                         <b>1 — TOUR DE TAILLE :</b><br>
                         Mesurez horizontalement autour de la partie la plus fine de la taille.
@@ -526,15 +515,12 @@
                         Mesurez la largeur au niveau de la cheville, d’un bord à l’autre.
                       </div>
 
-                      <div class="instItem" style="margin-bottom: 8px;">
+                      <div class="instItem" style="margin-bottom: 0;">
                         <b>5 — ENTREJAMBE :</b><br>
                         Mesurez de la couture de l'entrejambe à la ceinture sur l'avant.
                       </div>
 
-                      <!-- Séparateur seulement (PAS de 2e "Important") -->
                       <div class="instSep"></div>
-
-                      <!-- Spacer flexible pour remplir naturellement s'il reste un peu de vide -->
                       <div style="flex:1;"></div>
                     </div>
                   </div>
@@ -548,60 +534,135 @@
       </div>
     </section>
 
-    <!-- TOP PLACEHOLDER -->
+    <!-- TOP / ROBE BUILDER -->
     <section class="page" id="page-top">
-      <div class="card">
-        <div class="backRow">
-          <div class="backLink" id="backHome2">← Retour</div>
+      <div class="grid">
+
+        <!-- Left: inputs -->
+        <div class="card">
+          <div class="backRow">
+            <div class="backLink" id="backHomeTop">← Retour</div>
+            <div class="mutedSmall"></div>
+          </div>
+
+          <div class="cardTitle">Remplis uniquement les chiffres</div>
+
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding-left:14px;">Taille</th>
+                  <th>Largeur des épaules (cm)</th>
+                  <th>Poitrine (cm)</th>
+                  <th>Longueur (cm)</th>
+                  <th>Longueur des manches (cm)</th>
+                </tr>
+              </thead>
+              <tbody id="inputBodyTop"></tbody>
+            </table>
+          </div>
+
+          <div class="actions">
+            <button class="btn btnPrimary" id="downloadBtnTop">Télécharger la fiche</button>
+            <button class="btn" id="clearBtnTop">Vider les cases</button>
+          </div>
+
+          <div class="helper">
+            Tu peux laisser des cases vides (ex: pas de XS pour ce modèle).
+          </div>
         </div>
-        <div class="cardTitle">Haut / Robe</div>
-        <div class="helper">Pas encore fait. On le fait après le pantalon.</div>
+
+        <!-- Right: preview -->
+        <div class="card">
+          <div class="previewHeader">
+            <div class="cardTitle">Aperçu (fiche)</div>
+            <div class="hint">Export = exactement cette fiche</div>
+          </div>
+
+          <div class="previewFrame">
+            <div class="previewScaled">
+              <div class="sheet" id="sheetTop">
+                <div class="sheetTitle">Guide des tailles</div>
+
+                <div class="sheetTableWrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="text-align:left;padding-left:14px;">Taille</th>
+                        <th>Largeur des épaules (cm)</th>
+                        <th>Poitrine (cm)</th>
+                        <th>Longueur (cm)</th>
+                        <th>Longueur des manches (cm)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="sheetBodyTop"></tbody>
+                  </table>
+                </div>
+
+                <div class="sheetNote">
+                  <b>Important :</b> Les mesures sont prises à plat. Pour obtenir le tour complet, multipliez par 2.<br>
+                  Une variation de 1 à 2 cm peut être constatée.
+                </div>
+
+                <div class="sheetBottom">
+                  <div class="sheetBox diagramBox">
+                    <img src="assets/top-diagram.png" alt="Schéma haut / robe">
+                  </div>
+
+                  <div class="sheetBox instBox">
+                    <div class="instList">
+                      <div class="instItem">
+                        <b>1 — LARGEUR DES ÉPAULES :</b><br>
+                        Mesurez d’une couture d’épaule à l’autre, à l’endroit où la manche rejoint l’épaule.
+                      </div>
+
+                      <div class="instItem">
+                        <b>2 — POITRINE :</b><br>
+                        Mesurez d’un point de couture sous l’aisselle jusqu’à l’autre, d’un côté à l’autre.
+                      </div>
+
+                      <div class="instItem">
+                        <b>3 — LONGUEUR (ROBE / HAUT) :</b><br>
+                        Mesurez depuis la couture d’épaule, au niveau du col, jusqu’à l’ourlet inférieur.
+                      </div>
+
+                      <div class="instItem" style="margin-bottom: 0;">
+                        <b>4 — LONGUEUR DES MANCHES :</b><br>
+                        Mesurez depuis la couture d’épaule jusqu’à l’extrémité de la manche.
+                      </div>
+
+                      <div class="instSep"></div>
+                      <div style="flex:1;"></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /sheet -->
+            </div><!-- /previewScaled -->
+          </div><!-- /previewFrame -->
+        </div>
+
       </div>
     </section>
 
   </div>
 
   <script>
-    // --- Data ---
+    // ---------- Shared ----------
     const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
-    const COLS = [
-      { key: "waist", label: "Tour de taille (cm)" },
-      { key: "hips", label: "Tour de hanches (cm)" },
-      { key: "length", label: "Longueur totale (cm)" },
-      { key: "ankle", label: "Tour de cheville (cm)" },
-      { key: "inseam", label: "Entrejambe (cm)" },
-    ];
 
-    const state = {};
-    for (const s of SIZES) {
-      state[s] = { waist:"", hips:"", length:"", ankle:"", inseam:"" };
-    }
-
-    // --- Elements ---
-    const pages = {
-      home: document.getElementById("page-home"),
-      pants: document.getElementById("page-pants"),
-      top: document.getElementById("page-top"),
-    };
-
-    const crumbTitle = document.getElementById("crumbTitle");
-    const crumbSub   = document.getElementById("crumbSub");
-
-    const inputBody = document.getElementById("inputBody");
-    const sheetBody = document.getElementById("sheetBody");
-
-    const goPants = document.getElementById("goPants");
-    const goTop = document.getElementById("goTop");
-    const backHome = document.getElementById("backHome");
-    const backHome2 = document.getElementById("backHome2");
-
-    const clearBtn = document.getElementById("clearBtn");
-    const downloadBtn = document.getElementById("downloadBtn");
-
-    // --- Routing ---
     function setActive(pageName){
+      const pages = {
+        home: document.getElementById("page-home"),
+        pants: document.getElementById("page-pants"),
+        top: document.getElementById("page-top"),
+      };
+
       Object.values(pages).forEach(p => p.classList.remove("active"));
       pages[pageName].classList.add("active");
+
+      const crumbTitle = document.getElementById("crumbTitle");
+      const crumbSub   = document.getElementById("crumbSub");
 
       if(pageName === "home"){
         crumbTitle.textContent = "Accueil";
@@ -623,17 +684,43 @@
       else if(h === "top") setActive("top");
       else setActive("home");
     }
-
     window.addEventListener("hashchange", routeFromHash);
 
-    goPants.addEventListener("click", () => location.hash = "#pants");
-    goTop.addEventListener("click", () => location.hash = "#top");
-    backHome.addEventListener("click", () => location.hash = "#home");
-    backHome2.addEventListener("click", () => location.hash = "#home");
+    document.getElementById("goPants").addEventListener("click", () => location.hash = "#pants");
+    document.getElementById("goTop").addEventListener("click", () => location.hash = "#top");
+    document.getElementById("backHome").addEventListener("click", () => location.hash = "#home");
+    document.getElementById("backHomeTop").addEventListener("click", () => location.hash = "#home");
 
-    // --- Build input table ---
-    function buildInputs(){
-      inputBody.innerHTML = "";
+    async function exportSheetToPng(sheetEl, filename){
+      const scale = 2;
+      const canvas = await html2canvas(sheetEl, {
+        backgroundColor: "#ffffff",
+        scale,
+        useCORS: true
+      });
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    // ---------- PANTS ----------
+    const PANTS_COLS = [
+      { key: "waist", label: "Tour de taille (cm)" },
+      { key: "hips", label: "Tour de hanches (cm)" },
+      { key: "length", label: "Longueur totale (cm)" },
+      { key: "ankle", label: "Tour de cheville (cm)" },
+      { key: "inseam", label: "Entrejambe (cm)" },
+    ];
+
+    const pantsState = {};
+    for (const s of SIZES) pantsState[s] = { waist:"", hips:"", length:"", ankle:"", inseam:"" };
+
+    const inputBodyPants = document.getElementById("inputBodyPants");
+    const sheetBodyPants = document.getElementById("sheetBodyPants");
+
+    function buildInputsPants(){
+      inputBodyPants.innerHTML = "";
       for(const size of SIZES){
         const tr = document.createElement("tr");
 
@@ -642,34 +729,29 @@
         tdSize.textContent = size;
         tr.appendChild(tdSize);
 
-        for(const c of COLS){
+        for(const c of PANTS_COLS){
           const td = document.createElement("td");
-
           const inp = document.createElement("input");
           inp.className = "num";
           inp.inputMode = "numeric";
           inp.type = "number";
           inp.min = "0";
-          inp.placeholder = "";
-          inp.value = state[size][c.key];
+          inp.value = pantsState[size][c.key];
 
           inp.addEventListener("input", () => {
-            // garder vide si vide
-            state[size][c.key] = inp.value === "" ? "" : inp.value;
-            renderSheet();
+            pantsState[size][c.key] = inp.value === "" ? "" : inp.value;
+            renderSheetPants();
           });
 
           td.appendChild(inp);
           tr.appendChild(td);
         }
-
-        inputBody.appendChild(tr);
+        inputBodyPants.appendChild(tr);
       }
     }
 
-    // --- Render preview/export sheet table ---
-    function renderSheet(){
-      sheetBody.innerHTML = "";
+    function renderSheetPants(){
+      sheetBodyPants.innerHTML = "";
       for(const size of SIZES){
         const tr = document.createElement("tr");
 
@@ -678,50 +760,116 @@
         tdSize.textContent = size;
         tr.appendChild(tdSize);
 
-        for(const c of COLS){
+        for(const c of PANTS_COLS){
           const td = document.createElement("td");
-          const v = state[size][c.key];
+          const v = pantsState[size][c.key];
           td.textContent = (v === "" ? "—" : v);
           tr.appendChild(td);
         }
 
-        sheetBody.appendChild(tr);
+        sheetBodyPants.appendChild(tr);
       }
     }
 
-    // --- Clear ---
-    clearBtn.addEventListener("click", () => {
+    document.getElementById("clearBtnPants").addEventListener("click", () => {
       for(const s of SIZES){
-        for(const c of COLS){
-          state[s][c.key] = "";
+        for(const c of PANTS_COLS){
+          pantsState[s][c.key] = "";
         }
       }
-      buildInputs();
-      renderSheet();
+      buildInputsPants();
+      renderSheetPants();
     });
 
-    // --- Download (export image 1080px wide) ---
-    downloadBtn.addEventListener("click", async () => {
-      const node = document.getElementById("sheet");
-
-      // Important: on capture le node "sheet" (1080px)
-      // On force une échelle pour un rendu net
-      const scale = 2; // net sans exploser
-      const canvas = await html2canvas(node, {
-        backgroundColor: "#ffffff",
-        scale,
-        useCORS: true
-      });
-
-      const link = document.createElement("a");
-      link.download = "guide-des-tailles-pantalon.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+    document.getElementById("downloadBtnPants").addEventListener("click", async () => {
+      await exportSheetToPng(document.getElementById("sheetPants"), "guide-des-tailles-pantalon.png");
     });
 
-    // --- Init ---
-    buildInputs();
-    renderSheet();
+    // ---------- TOP / ROBE ----------
+    const TOP_COLS = [
+      { key: "shoulders", label: "Largeur des épaules (cm)" },
+      { key: "chest", label: "Poitrine (cm)" },
+      { key: "length", label: "Longueur (cm)" },
+      { key: "sleeves", label: "Longueur des manches (cm)" },
+    ];
+
+    const topState = {};
+    for (const s of SIZES) topState[s] = { shoulders:"", chest:"", length:"", sleeves:"" };
+
+    const inputBodyTop = document.getElementById("inputBodyTop");
+    const sheetBodyTop = document.getElementById("sheetBodyTop");
+
+    function buildInputsTop(){
+      inputBodyTop.innerHTML = "";
+      for(const size of SIZES){
+        const tr = document.createElement("tr");
+
+        const tdSize = document.createElement("td");
+        tdSize.className = "sizeCell";
+        tdSize.textContent = size;
+        tr.appendChild(tdSize);
+
+        for(const c of TOP_COLS){
+          const td = document.createElement("td");
+          const inp = document.createElement("input");
+          inp.className = "num";
+          inp.inputMode = "numeric";
+          inp.type = "number";
+          inp.min = "0";
+          inp.value = topState[size][c.key];
+
+          inp.addEventListener("input", () => {
+            topState[size][c.key] = inp.value === "" ? "" : inp.value;
+            renderSheetTop();
+          });
+
+          td.appendChild(inp);
+          tr.appendChild(td);
+        }
+        inputBodyTop.appendChild(tr);
+      }
+    }
+
+    function renderSheetTop(){
+      sheetBodyTop.innerHTML = "";
+      for(const size of SIZES){
+        const tr = document.createElement("tr");
+
+        const tdSize = document.createElement("td");
+        tdSize.className = "sizeCell";
+        tdSize.textContent = size;
+        tr.appendChild(tdSize);
+
+        for(const c of TOP_COLS){
+          const td = document.createElement("td");
+          const v = topState[size][c.key];
+          td.textContent = (v === "" ? "—" : v);
+          tr.appendChild(td);
+        }
+
+        sheetBodyTop.appendChild(tr);
+      }
+    }
+
+    document.getElementById("clearBtnTop").addEventListener("click", () => {
+      for(const s of SIZES){
+        for(const c of TOP_COLS){
+          topState[s][c.key] = "";
+        }
+      }
+      buildInputsTop();
+      renderSheetTop();
+    });
+
+    document.getElementById("downloadBtnTop").addEventListener("click", async () => {
+      await exportSheetToPng(document.getElementById("sheetTop"), "guide-des-tailles-haut-robe.png");
+    });
+
+    // ---------- Init ----------
+    buildInputsPants();
+    renderSheetPants();
+    buildInputsTop();
+    renderSheetTop();
     routeFromHash();
   </script>
 </body>
