@@ -2,46 +2,43 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Size chart maker</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- html2canvas -->
+  <!-- Script-style title (proche du "Belle") -->
+  <link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
+
+  <!-- UI font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- html2canvas (export image) -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
     :root{
-      /* Couleurs comme "avant" (fond clair + vert) */
       --bg: #F4F4F2;
-      --card: #FFFFFF;
       --text: #111111;
-      --muted: rgba(17,17,17,.65);
-      --line: rgba(17,17,17,.12);
-      --head: rgba(17,17,17,.06);
+      --muted: rgba(17,17,17,.62);
+      --card: #ffffff;
+      --line: rgba(17,17,17,.10);
       --brand: #7A8B60;
+      --brand-2: rgba(122,139,96,.15);
+      --shadow: 0 18px 45px rgba(17,17,17,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
 
-      /* Fiche */
-      --sheetW: 1080px;
-      --sheetH: 1166px; /* 1080 * 1.08 = 1166.4 -> 1166 */
-      --radius: 22px;
-      --sheetPad: 28px;
-
-      /* Typo */
-      --titleSize: 62px;         /* "Guide des tailles" */
-      --tableFont: 18px;         /* tableau */
-      --tableHeadFont: 16px;     /* entêtes */
-      --tablePadY: 10px;
-      --tablePadX: 10px;
-      --noteFont: 14px;          /* note sous tableau */
-      --instTitle: 16px;         /* titres 1— ... */
-      --instBody: 14px;
+      /* Ajustements demandés */
+      --previewScale: 0.94;         /* apercu un peu plus petit */
+      --instTitle: 18px;            /* un peu plus grand */
+      --instBody: 14.8px;           /* un peu plus grand */
+      --instLine: 1.35;             /* + lisible + remplit mieux */
     }
 
-    * { box-sizing: border-box; }
+    *{ box-sizing:border-box; }
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -49,157 +46,172 @@
       color: var(--text);
     }
 
-    /* Layout pages */
+    a{ color: inherit; text-decoration:none; }
+
     .topbar{
+      max-width: 1200px;
+      margin: 18px auto 0;
+      padding: 0 18px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding: 18px 24px;
-      max-width: 1280px;
-      margin: 0 auto;
+      gap: 12px;
     }
-    .brand-right{
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .page{
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 24px 28px;
-    }
-
-    .hidden{ display:none !important; }
-
-    /* HOME */
-    .homeTitle{
-      font-size: 22px;
-      font-weight: 700;
-      margin: 12px 0 16px;
-    }
-    .homeGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      max-width: 760px;
-    }
-    .pickBtn{
-      border: 1px solid var(--line);
-      background: var(--card);
-      border-radius: 16px;
-      padding: 16px;
-      cursor: pointer;
-      box-shadow: 0 10px 28px rgba(0,0,0,.06);
-      transition: transform .08s ease, box-shadow .12s ease;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height: 170px;
-    }
-    .pickBtn:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 14px 34px rgba(0,0,0,.08);
-    }
-    .pickBtn img{
-      max-width: 170px;
-      width: 100%;
-      height: auto;
-      display:block;
-      image-rendering: auto;
-    }
-    .homeHint{
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* BUILDER */
-    .builderHeader{
+    .topbar .left{
       display:flex;
       align-items:baseline;
       gap: 10px;
-      margin: 12px 0 14px;
     }
-    .builderHeader h1{
-      margin:0;
+    .crumbTitle{
+      font-weight: 700;
       font-size: 22px;
-      font-weight: 800;
     }
-    .builderHeader .sub{
-      color: var(--muted);
+    .crumbSub{
       font-size: 13px;
-      font-weight: 600;
+      color: var(--muted);
+    }
+    .topbar .right{
+      font-size: 13px;
+      color: var(--muted);
     }
 
+    .wrap{
+      max-width: 1200px;
+      margin: 12px auto 40px;
+      padding: 0 18px;
+    }
+
+    /* Pages */
+    .page{ display:none; }
+    .page.active{ display:block; }
+
+    /* Home */
+    .homeCard{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+    .homeGrid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 10px;
+    }
+    .imgBtn{
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+      cursor:pointer;
+      transition: transform .06s ease, box-shadow .12s ease, border-color .12s ease;
+      box-shadow: 0 10px 25px rgba(17,17,17,.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: 150px;
+      position:relative;
+      overflow:hidden;
+    }
+    .imgBtn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(122,139,96,.35);
+      box-shadow: 0 14px 30px rgba(17,17,17,.08);
+    }
+    .imgBtn img{
+      max-width: 240px;
+      width: 100%;
+      height: auto;
+      display:block;
+    }
+
+    /* Builder layout */
     .grid{
       display:grid;
-      grid-template-columns: 560px 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 18px;
       align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
     }
 
     .card{
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 12px 28px rgba(0,0,0,.06);
-      padding: 16px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 18px;
     }
 
-    .back{
-      display:inline-flex;
+    .backRow{
+      display:flex;
       align-items:center;
-      gap: 8px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 700;
-      cursor: pointer;
-      padding: 6px 4px;
-      margin-bottom: 8px;
+      justify-content:space-between;
+      margin-bottom: 10px;
     }
+    .backLink{
+      font-size: 13px;
+      color: var(--muted);
+      cursor:pointer;
+      user-select:none;
+    }
+    .backLink:hover{ color: var(--text); }
 
-    .card h2{
-      margin: 4px 0 10px;
-      font-size: 16px;
-      font-weight: 800;
+    .cardTitle{
+      font-weight: 700;
+      font-size: 14px;
+      margin: 6px 0 10px;
     }
 
     /* Input table */
-    table{
-      border-collapse: collapse;
-      width:100%;
-    }
-    .inputTable th, .inputTable td{
-      border-bottom: 1px solid var(--line);
-      padding: 10px 8px;
-      vertical-align: middle;
-      text-align: center;
-      font-size: 13px;
-    }
-    .inputTable thead th{
-      background: var(--head);
-      font-weight: 800;
-      font-size: 12px;
-    }
-    .inputTable td.sizeCell{
-      font-weight: 900;
-      text-align: left;
-      padding-left: 10px;
-      width: 64px;
-    }
-    .cellInput{
-      width: 82px;
-      height: 30px;
-      border-radius: 8px;
+    .tableWrap{
       border: 1px solid var(--line);
-      background: #fff;
-      text-align: center;
-      outline: none;
-      font-weight: 700;
-      font-size: 13px;
+      border-radius: 14px;
+      overflow:hidden;
     }
-    .cellInput:focus{
-      border-color: rgba(122,139,96,.65);
+    table{
+      width:100%;
+      border-collapse: collapse;
+      background:#fff;
+    }
+    thead th{
+      background: rgba(122,139,96,.12);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px 10px;
+      text-align:center;
+      border-bottom: 1px solid var(--line);
+    }
+    tbody td{
+      border-bottom: 1px solid rgba(17,17,17,.07);
+      padding: 10px;
+      text-align:center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    tbody tr:last-child td{ border-bottom: none; }
+    tbody td.sizeCell{
+      width: 74px;
+      font-weight: 800;
+      text-align:left;
+      padding-left: 14px;
+      background: rgba(17,17,17,.02);
+    }
+    input.num{
+      width: 74px;
+      height: 30px;
+      border: 1px solid rgba(17,17,17,.12);
+      border-radius: 8px;
+      padding: 0 10px;
+      text-align:center;
+      font-size: 13px;
+      outline:none;
+      background: #fff;
+    }
+    input.num:focus{
+      border-color: rgba(122,139,96,.55);
       box-shadow: 0 0 0 3px rgba(122,139,96,.18);
     }
 
@@ -211,362 +223,353 @@
       align-items:center;
     }
     .btn{
-      border: 1px solid var(--line);
+      border: 1px solid rgba(17,17,17,.14);
       background: #fff;
       color: var(--text);
-      font-weight: 800;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 10px 14px;
-      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+      cursor:pointer;
+      user-select:none;
     }
-    .btn.primary{
+    .btnPrimary{
       background: var(--brand);
-      border-color: rgba(0,0,0,.06);
+      border-color: var(--brand);
       color: #fff;
     }
-    .smallHint{
-      margin-top: 10px;
+    .btn:hover{
+      filter: brightness(0.98);
+    }
+    .helper{
+      margin-top: 8px;
       font-size: 12px;
       color: var(--muted);
     }
 
-    /* Preview wrapper */
-    .previewTitleRow{
+    /* Preview card header */
+    .previewHeader{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 10px;
     }
-    .previewTitleRow h2{
-      margin: 4px 0;
-      font-size: 16px;
-      font-weight: 900;
+    .previewHeader .cardTitle{
+      margin:0;
+      font-size: 14px;
     }
-    .previewMeta{
+    .hint{
       font-size: 12px;
       color: var(--muted);
-      font-weight: 700;
     }
 
-    .previewBox{
+    /* Preview frame */
+    .previewFrame{
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
+      padding: 12px;
       background: #fff;
-      padding: 14px;
-      overflow: auto;
-      max-height: 78vh;
+      overflow:auto;
+      max-height: 650px;
     }
-    /* IMPORTANT: on NE scale PAS #sheet. On scale seulement #previewScaler */
-    #previewScaler{
+    .previewScaled{
+      transform: scale(var(--previewScale));
       transform-origin: top left;
-      /* transform set by JS */
+      width: calc(1080px * 1); /* base */
     }
 
-    /* ====== THE SHEET (exported) ====== */
-    #sheet{
-      width: var(--sheetW);
-      height: var(--sheetH);
+    /* Export sheet (exact capture) */
+    .sheet{
+      width: 1080px;              /* demandé */
       background: #fff;
-      border: 1px solid rgba(0,0,0,.06);
-      border-radius: var(--radius);
-      padding: var(--sheetPad);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .sheetInner{
-      height: 100%;
-      display:flex;
-      flex-direction:column;
-      gap: 16px;
+      border-radius: 26px;
+      border: 1px solid rgba(17,17,17,.10);
+      overflow:hidden;
+      position:relative;
+      padding: 34px 34px 28px;
     }
 
     .sheetTitle{
-      font-family: Allura, cursive;
-      font-size: var(--titleSize);
-      line-height: 1;
-      text-align: center;
+      font-family: "Allura", cursive;
+      text-align:center;
+      font-size: 72px;
       color: var(--brand);
-      margin-top: 2px;
-      margin-bottom: 0;
       font-weight: 400;
+      margin: 4px 0 18px;
+      line-height: 1;
     }
 
     .sheetTableWrap{
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      overflow: hidden;
+      border: 1px solid rgba(17,17,17,.12);
+      border-radius: 18px;
+      overflow:hidden;
     }
-    .sheetTable{
-      width:100%;
-      border-collapse: collapse;
-      table-layout: fixed;
+    .sheet table thead th{
+      background: rgba(122,139,96,.10);
+      font-size: 13px;
+      padding: 12px 10px;
     }
-    .sheetTable th, .sheetTable td{
-      border-bottom: 1px solid var(--line);
-      padding: var(--tablePadY) var(--tablePadX);
-      text-align: center;
-      font-size: var(--tableFont);
-      line-height: 1.15;
-      white-space: nowrap;
+    .sheet table tbody td{
+      font-size: 15px;
+      padding: 12px 10px;
+      font-weight: 700;
     }
-    .sheetTable thead th{
-      background: var(--head);
-      font-size: var(--tableHeadFont);
+    .sheet table tbody td.sizeCell{
       font-weight: 900;
-      white-space: normal; /* entêtes peuvent wrap proprement */
-      line-height: 1.1;
-    }
-    .sheetTable tbody tr:last-child td{ border-bottom: none; }
-    .sheetTable td.sizeCell{
-      text-align: left;
-      font-weight: 900;
-      padding-left: 14px;
-      width: 90px;
-    }
-    .dash{
-      font-weight: 900;
-      color: rgba(0,0,0,.75);
+      background: rgba(17,17,17,.02);
     }
 
     .sheetNote{
       text-align:center;
-      font-size: var(--noteFont);
-      color: var(--muted);
-      line-height: 1.25;
-      margin-top: -4px;
+      margin: 14px 0 18px;
+      font-size: 14px;
+      color: rgba(17,17,17,.60);
+      line-height: 1.35;
+    }
+    .sheetNote b{
+      color: rgba(17,17,17,.78);
     }
 
     .sheetBottom{
       display:grid;
-      grid-template-columns: 380px 1fr;
+      grid-template-columns: 420px 1fr;
       gap: 18px;
-      flex: 1;
-      min-height: 0;
+      align-items:stretch;
     }
 
-    .diagramCard{
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
+    .sheetBox{
+      border: 1px solid rgba(17,17,17,.12);
+      border-radius: 22px;
+      padding: 18px;
+      background: #fff;
+      min-height: 520px; /* base */
+    }
+
+    .diagramBox{
       display:flex;
       align-items:center;
       justify-content:center;
-      overflow:hidden;
     }
-    .diagramCard img{
-      width: 100%;
+    .diagramBox img{
+      max-width: 100%;
       height: auto;
       display:block;
     }
 
-    .instCard{
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px 18px;
-      overflow:hidden;
+    .instBox{
       display:flex;
       flex-direction:column;
       gap: 10px;
     }
-    .instLine{
-      line-height: 1.2;
+
+    .instList{
+      font-size: var(--instBody);
+      line-height: var(--instLine);
+      color: rgba(17,17,17,.90);
     }
-    .instLine .t{
+    .instItem{
+      margin-bottom: 10px;
+    }
+    .instItem b{
+      display:inline-block;
       font-size: var(--instTitle);
       font-weight: 900;
+      letter-spacing: .2px;
+      color: rgba(17,17,17,.95);
     }
-    .instLine .b{
-      font-size: var(--instBody);
-      color: var(--text);
-      font-weight: 500;
-      margin-top: 2px;
-    }
-
     .instSep{
       height: 1px;
-      background: var(--line);
-      margin: 4px 0;
+      background: rgba(17,17,17,.10);
+      margin: 10px 0 10px;
     }
 
-    .instImportant{
-      font-size: 13px;
-      line-height: 1.2;
+    /* IMPORTANT: on SUPPRIME le 2e "Important" (celui du bas) => plus de bloc duplicate */
+    /* On garde uniquement la note sous le tableau. */
+
+    /* Small polish */
+    .mutedSmall{
       color: var(--muted);
-    }
-    .instImportant b{
-      color: var(--text);
-    }
-
-    /* Responsive */
-    @media (max-width: 1100px){
-      .grid{ grid-template-columns: 1fr; }
-      .previewBox{ max-height: none; }
+      font-size: 12px;
     }
   </style>
 </head>
 
 <body>
+  <!-- Topbar -->
   <div class="topbar">
-    <div></div>
-    <div class="brand-right">Size chart maker</div>
+    <div class="left">
+      <div class="crumbTitle" id="crumbTitle">Accueil</div>
+      <div class="crumbSub" id="crumbSub"></div>
+    </div>
+    <div class="right">Size chart maker</div>
   </div>
 
-  <div class="page">
+  <div class="wrap">
+
     <!-- HOME -->
-    <section id="home">
-      <div class="homeTitle">Accueil</div>
-      <div class="homeGrid">
-        <button class="pickBtn" id="goPants" title="Pantalon">
-          <img src="assets/btn-pants.png" alt="Pantalon">
-        </button>
-        <button class="pickBtn" id="goTop" title="Haut / Robe">
-          <img src="assets/btn-top.png" alt="Haut / Robe">
-        </button>
+    <section class="page active" id="page-home">
+      <div class="homeCard">
+        <div class="cardTitle">Choisis ce que tu veux créer</div>
+        <div class="homeGrid">
+          <button class="imgBtn" id="goPants" title="Pantalon">
+            <img src="assets/btn-pants.png" alt="Pantalon">
+          </button>
+          <button class="imgBtn" id="goTop" title="Haut / Robe">
+            <img src="assets/btn-top.png" alt="Haut / Robe">
+          </button>
+        </div>
+        <div class="helper" style="margin-top:14px;">
+          Pour l’instant : <b>Pantalon</b> est prêt. <b>Haut / Robe</b> arrive après.
+        </div>
       </div>
-      <div class="homeHint">Choisis une catégorie pour créer ta fiche.</div>
     </section>
 
-    <!-- BUILDER PANTS -->
-    <section id="builderPants" class="hidden">
-      <div class="builderHeader">
-        <h1>Accueil</h1>
-        <div class="sub">— Pantalon</div>
-      </div>
-
+    <!-- PANTS BUILDER -->
+    <section class="page" id="page-pants">
       <div class="grid">
+
+        <!-- Left: inputs -->
         <div class="card">
-          <button class="back" id="backHome">← Retour</button>
+          <div class="backRow">
+            <div class="backLink" id="backHome">← Retour</div>
+            <div class="mutedSmall"></div>
+          </div>
 
-          <h2>Remplis uniquement les chiffres</h2>
+          <div class="cardTitle">Remplis uniquement les chiffres</div>
 
-          <table class="inputTable">
-            <thead>
-              <tr>
-                <th style="text-align:left;padding-left:10px;">Taille</th>
-                <th>Tour de taille (cm)</th>
-                <th>Tour de hanches (cm)</th>
-                <th>Longueur totale (cm)</th>
-                <th>Tour de cheville (cm)</th>
-                <th>Entrejambe (cm)</th>
-              </tr>
-            </thead>
-            <tbody id="inputBody"></tbody>
-          </table>
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding-left:14px;">Taille</th>
+                  <th>Tour de taille (cm)</th>
+                  <th>Tour de hanches (cm)</th>
+                  <th>Longueur totale (cm)</th>
+                  <th>Tour de cheville (cm)</th>
+                  <th>Entrejambe (cm)</th>
+                </tr>
+              </thead>
+              <tbody id="inputBody"></tbody>
+            </table>
+          </div>
 
           <div class="actions">
-            <button class="btn primary" id="downloadBtn">Télécharger la fiche</button>
+            <button class="btn btnPrimary" id="downloadBtn">Télécharger la fiche</button>
             <button class="btn" id="clearBtn">Vider les cases</button>
           </div>
-          <div class="smallHint">Tu peux laisser des cases vides (ex: pas de XS pour ce modèle).</div>
+
+          <div class="helper">
+            Tu peux laisser des cases vides (ex: pas de XS pour ce modèle).
+          </div>
         </div>
 
+        <!-- Right: preview -->
         <div class="card">
-          <div class="previewTitleRow">
-            <h2>Aperçu (fiche)</h2>
-            <div class="previewMeta">Export = exactement cette fiche</div>
+          <div class="previewHeader">
+            <div class="cardTitle">Aperçu (fiche)</div>
+            <div class="hint">Export = exactement cette fiche</div>
           </div>
 
-          <div class="previewBox" id="previewBox">
-            <!-- on scale uniquement ce wrapper -->
-            <div id="previewScaler">
-              <!-- SINGLE SOURCE OF TRUTH: this sheet -->
-              <div id="sheet" aria-label="Fiche Guide des tailles">
-                <div class="sheetInner">
-                  <div class="sheetTitle">Guide des tailles</div>
+          <div class="previewFrame">
+            <div class="previewScaled" id="previewScaled">
+              <!-- IMPORTANT: le "sheet" est EXACTEMENT ce qu’on exporte -->
+              <div class="sheet" id="sheet">
+                <div class="sheetTitle">Guide des tailles</div>
 
-                  <div class="sheetTableWrap">
-                    <table class="sheetTable">
-                      <thead>
-                        <tr>
-                          <th style="text-align:left;padding-left:14px;width:90px;">Taille</th>
-                          <th>Tour de taille (cm)</th>
-                          <th>Tour de hanches (cm)</th>
-                          <th>Longueur totale (cm)</th>
-                          <th>Tour de cheville (cm)</th>
-                          <th>Entrejambe (cm)</th>
-                        </tr>
-                      </thead>
-                      <tbody id="sheetBody"></tbody>
-                    </table>
+                <div class="sheetTableWrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="text-align:left;padding-left:14px;">Taille</th>
+                        <th>Tour de taille (cm)</th>
+                        <th>Tour de hanches (cm)</th>
+                        <th>Longueur totale (cm)</th>
+                        <th>Tour de cheville (cm)</th>
+                        <th>Entrejambe (cm)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="sheetBody"></tbody>
+                  </table>
+                </div>
+
+                <!-- ON GARDE UNIQUEMENT CET IMPORTANT (sous le tableau) -->
+                <div class="sheetNote">
+                  <b>Important :</b> Les mesures sont prises à plat. Pour obtenir le tour complet, multipliez par 2.<br>
+                  Une variation de 1 à 2 cm peut être constatée.
+                </div>
+
+                <div class="sheetBottom">
+                  <div class="sheetBox diagramBox">
+                    <img src="assets/pants-diagram.png" alt="Schéma pantalon">
                   </div>
 
-                  <div class="sheetNote">
-                    <div><b>Important :</b> Les mesures sont prises à plat. Pour obtenir le tour complet, multipliez par 2.</div>
-                    <div>Une variation de 1 à 2 cm peut être constatée.</div>
-                  </div>
-
-                  <div class="sheetBottom">
-                    <div class="diagramCard">
-                      <img src="assets/pants-diagram.png" alt="Schéma pantalon" />
-                    </div>
-
-                    <div class="instCard">
-                      <div class="instLine">
-                        <div class="t">1 — TOUR DE TAILLE :</div>
-                        <div class="b">Mesurez horizontalement autour de la partie la plus fine de la taille.</div>
+                  <div class="sheetBox instBox">
+                    <div class="instList" id="instList">
+                      <div class="instItem">
+                        <b>1 — TOUR DE TAILLE :</b><br>
+                        Mesurez horizontalement autour de la partie la plus fine de la taille.
                       </div>
 
-                      <div class="instLine">
-                        <div class="t">2 — TOUR DE HANCHES :</div>
-                        <div class="b">Trouvez la partie la plus large au niveau des hanches. Mesurez d'un côté à l'autre, puis multipliez cette mesure par deux pour obtenir la taille des hanches.</div>
+                      <div class="instItem">
+                        <b>2 — TOUR DE HANCHES :</b><br>
+                        Trouvez la partie la plus large au niveau des hanches. Mesurez d'un côté à l'autre, puis multipliez cette mesure par deux pour obtenir la taille des hanches.
                       </div>
 
-                      <div class="instLine">
-                        <div class="t">3 — LONGUEUR TOTALE :</div>
-                        <div class="b">Mesurez le long de la couture latérale de la ceinture jusqu'à l'ourlet inférieur.</div>
+                      <div class="instItem">
+                        <b>3 — LONGUEUR TOTALE :</b><br>
+                        Mesurez le long de la couture latérale de la ceinture jusqu'à l'ourlet inférieur.
                       </div>
 
-                      <div class="instLine">
-                        <div class="t">4 — TOUR DE CHEVILLE :</div>
-                        <div class="b">Mesurez la largeur au niveau de la cheville, d’un bord à l’autre.</div>
+                      <div class="instItem">
+                        <b>4 — TOUR DE CHEVILLE :</b><br>
+                        Mesurez la largeur au niveau de la cheville, d’un bord à l’autre.
                       </div>
 
-                      <div class="instLine">
-                        <div class="t">5 — ENTREJAMBE :</div>
-                        <div class="b">Mesurez de la couture de l'entrejambe à la ceinture sur l'avant.</div>
+                      <div class="instItem" style="margin-bottom: 8px;">
+                        <b>5 — ENTREJAMBE :</b><br>
+                        Mesurez de la couture de l'entrejambe à la ceinture sur l'avant.
                       </div>
 
+                      <!-- Séparateur seulement (PAS de 2e "Important") -->
                       <div class="instSep"></div>
 
-                      <div class="instImportant">
-                        <b>Important :</b> Les mesures sont prises à plat.<br/>
-                        Pour obtenir le tour complet, multipliez par 2.<br/>
-                        Une variation de 1 à 2 cm peut être constatée.
+                      <!-- Remplissage du "trou" : on ajoute un peu d'air, mais sans répéter Important -->
+                      <div style="color: rgba(17,17,17,.68); font-size: 13.6px; line-height: 1.35;">
+                        Astuce : si tu veux afficher une valeur “tour complet” (et non à plat), tu multiplies par 2.
                       </div>
+
+                      <!-- Spacer flexible pour remplir naturellement s'il reste un peu de vide -->
+                      <div style="flex:1;"></div>
                     </div>
                   </div>
-
                 </div>
-              </div>
-              <!-- /sheet -->
-            </div>
-          </div>
+
+              </div><!-- /sheet -->
+            </div><!-- /previewScaled -->
+          </div><!-- /previewFrame -->
         </div>
+
       </div>
     </section>
 
-    <!-- Placeholder TOP -->
-    <section id="builderTop" class="hidden">
-      <div class="builderHeader">
-        <h1>Accueil</h1>
-        <div class="sub">— Haut / Robe</div>
-      </div>
+    <!-- TOP PLACEHOLDER -->
+    <section class="page" id="page-top">
       <div class="card">
-        <button class="back" id="backHome2">← Retour</button>
-        <h2>Pas encore</h2>
-        <div style="color: var(--muted); font-size: 13px; font-weight: 700;">
-          On le fera après, quand tu me donnes le modèle “haut/robe”.
+        <div class="backRow">
+          <div class="backLink" id="backHome2">← Retour</div>
         </div>
+        <div class="cardTitle">Haut / Robe</div>
+        <div class="helper">Pas encore fait. On le fait après le pantalon.</div>
       </div>
     </section>
+
   </div>
 
   <script>
-    // ====== STATE ======
+    // --- Data ---
     const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
-    const FIELDS = [
+    const COLS = [
       { key: "waist", label: "Tour de taille (cm)" },
       { key: "hips", label: "Tour de hanches (cm)" },
       { key: "length", label: "Longueur totale (cm)" },
@@ -575,62 +578,68 @@
     ];
 
     const state = {};
-    for (const size of SIZES){
-      state[size] = {};
-      for (const f of FIELDS) state[size][f.key] = "";
+    for (const s of SIZES) {
+      state[s] = { waist:"", hips:"", length:"", ankle:"", inseam:"" };
     }
 
-    const elHome = document.getElementById("home");
-    const elBuilderPants = document.getElementById("builderPants");
-    const elBuilderTop = document.getElementById("builderTop");
+    // --- Elements ---
+    const pages = {
+      home: document.getElementById("page-home"),
+      pants: document.getElementById("page-pants"),
+      top: document.getElementById("page-top"),
+    };
+
+    const crumbTitle = document.getElementById("crumbTitle");
+    const crumbSub   = document.getElementById("crumbSub");
 
     const inputBody = document.getElementById("inputBody");
     const sheetBody = document.getElementById("sheetBody");
 
-    const previewBox = document.getElementById("previewBox");
-    const previewScaler = document.getElementById("previewScaler");
-    const sheet = document.getElementById("sheet");
+    const goPants = document.getElementById("goPants");
+    const goTop = document.getElementById("goTop");
+    const backHome = document.getElementById("backHome");
+    const backHome2 = document.getElementById("backHome2");
 
-    // ====== ROUTING ======
-    function show(page){
-      elHome.classList.add("hidden");
-      elBuilderPants.classList.add("hidden");
-      elBuilderTop.classList.add("hidden");
+    const clearBtn = document.getElementById("clearBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
 
-      if (page === "home") elHome.classList.remove("hidden");
-      if (page === "pants") elBuilderPants.classList.remove("hidden");
-      if (page === "top") elBuilderTop.classList.remove("hidden");
+    // --- Routing ---
+    function setActive(pageName){
+      Object.values(pages).forEach(p => p.classList.remove("active"));
+      pages[pageName].classList.add("active");
 
-      // Recalc preview scale when entering pants
-      if (page === "pants"){
-        requestAnimationFrame(() => {
-          renderSheet();
-          applyPreviewScale();
-        });
+      if(pageName === "home"){
+        crumbTitle.textContent = "Accueil";
+        crumbSub.textContent = "";
+      }
+      if(pageName === "pants"){
+        crumbTitle.textContent = "Accueil";
+        crumbSub.textContent = "— Pantalon";
+      }
+      if(pageName === "top"){
+        crumbTitle.textContent = "Accueil";
+        crumbSub.textContent = "— Haut / Robe";
       }
     }
 
-    function go(hash){
-      location.hash = hash;
+    function routeFromHash(){
+      const h = (location.hash || "#home").replace("#","");
+      if(h === "pants") setActive("pants");
+      else if(h === "top") setActive("top");
+      else setActive("home");
     }
 
-    function onRoute(){
-      const h = (location.hash || "#").replace("#","").trim();
-      if (h === "pants") return show("pants");
-      if (h === "top") return show("top");
-      return show("home");
-    }
-    window.addEventListener("hashchange", onRoute);
+    window.addEventListener("hashchange", routeFromHash);
 
-    document.getElementById("goPants").addEventListener("click", () => go("pants"));
-    document.getElementById("goTop").addEventListener("click", () => go("top"));
-    document.getElementById("backHome").addEventListener("click", () => go(""));
-    document.getElementById("backHome2").addEventListener("click", () => go(""));
+    goPants.addEventListener("click", () => location.hash = "#pants");
+    goTop.addEventListener("click", () => location.hash = "#top");
+    backHome.addEventListener("click", () => location.hash = "#home");
+    backHome2.addEventListener("click", () => location.hash = "#home");
 
-    // ====== BUILD INPUT TABLE ======
+    // --- Build input table ---
     function buildInputs(){
       inputBody.innerHTML = "";
-      for (const size of SIZES){
+      for(const size of SIZES){
         const tr = document.createElement("tr");
 
         const tdSize = document.createElement("td");
@@ -638,31 +647,35 @@
         tdSize.textContent = size;
         tr.appendChild(tdSize);
 
-        for (const f of FIELDS){
+        for(const c of COLS){
           const td = document.createElement("td");
+
           const inp = document.createElement("input");
-          inp.className = "cellInput";
+          inp.className = "num";
+          inp.inputMode = "numeric";
           inp.type = "number";
-          inp.inputMode = "decimal";
           inp.min = "0";
-          inp.step = "0.1";
           inp.placeholder = "";
-          inp.value = state[size][f.key] ?? "";
+          inp.value = state[size][c.key];
+
           inp.addEventListener("input", () => {
-            state[size][f.key] = (inp.value || "").trim();
+            // garder vide si vide
+            state[size][c.key] = inp.value === "" ? "" : inp.value;
             renderSheet();
           });
+
           td.appendChild(inp);
           tr.appendChild(td);
         }
+
         inputBody.appendChild(tr);
       }
     }
 
-    // ====== RENDER SHEET TABLE ======
+    // --- Render preview/export sheet table ---
     function renderSheet(){
       sheetBody.innerHTML = "";
-      for (const size of SIZES){
+      for(const size of SIZES){
         const tr = document.createElement("tr");
 
         const tdSize = document.createElement("td");
@@ -670,94 +683,51 @@
         tdSize.textContent = size;
         tr.appendChild(tdSize);
 
-        for (const f of FIELDS){
+        for(const c of COLS){
           const td = document.createElement("td");
-          const v = (state[size][f.key] || "").trim();
-          if (v === ""){
-            const s = document.createElement("span");
-            s.className = "dash";
-            s.textContent = "—";
-            td.appendChild(s);
-          } else {
-            td.textContent = v;
-          }
+          const v = state[size][c.key];
+          td.textContent = (v === "" ? "—" : v);
           tr.appendChild(td);
         }
+
         sheetBody.appendChild(tr);
       }
-      // after render, keep preview scale correct
-      applyPreviewScale();
     }
 
-    // ====== PREVIEW SCALE (ONLY WRAPPER) ======
-    function applyPreviewScale(){
-      // Make sure preview box exists and has width
-      const boxW = previewBox.clientWidth - 28; // padding-ish safety
-      if (!boxW || boxW < 200) return;
-
-      // Compute scale to fit width
-      const naturalW = sheet.offsetWidth; // should be 1080
-      const scale = Math.min(1, boxW / naturalW);
-
-      // Apply on wrapper only
-      previewScaler.style.transform = `scale(${scale})`;
-    }
-
-    window.addEventListener("resize", () => applyPreviewScale());
-
-    // ====== ACTIONS ======
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      for (const size of SIZES){
-        for (const f of FIELDS) state[size][f.key] = "";
+    // --- Clear ---
+    clearBtn.addEventListener("click", () => {
+      for(const s of SIZES){
+        for(const c of COLS){
+          state[s][c.key] = "";
+        }
       }
       buildInputs();
       renderSheet();
     });
 
-    async function downloadSheet(){
-      // Important: export must be 1:1 (no preview scaling)
-      const prevTransform = previewScaler.style.transform;
-      previewScaler.style.transform = "scale(1)";
+    // --- Download (export image 1080px wide) ---
+    downloadBtn.addEventListener("click", async () => {
+      const node = document.getElementById("sheet");
 
-      // Wait next frame + fonts
-      await new Promise(r => requestAnimationFrame(r));
-      if (document.fonts && document.fonts.ready) {
-        try { await document.fonts.ready; } catch(e){}
-      }
-
-      // Capture #sheet exactly
-      const canvas = await html2canvas(sheet, {
+      // Important: on capture le node "sheet" (1080px)
+      // On force une échelle pour un rendu net
+      const scale = 2; // net sans exploser
+      const canvas = await html2canvas(node, {
         backgroundColor: "#ffffff",
-        scale: 2,           // sharp
-        useCORS: true,
-        logging: false
+        scale,
+        useCORS: true
       });
 
-      // Restore preview scaling
-      previewScaler.style.transform = prevTransform;
-      await new Promise(r => requestAnimationFrame(r));
-      applyPreviewScale();
-
-      // Download
-      const a = document.createElement("a");
-      a.href = canvas.toDataURL("image/png");
-      a.download = "guide-des-tailles-pantalon.png";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }
-
-    document.getElementById("downloadBtn").addEventListener("click", () => {
-      downloadSheet().catch(err => {
-        console.error(err);
-        alert("Erreur export. Rafraîchis la page et réessaie.");
-      });
+      const link = document.createElement("a");
+      link.download = "guide-des-tailles-pantalon.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
     });
 
-    // ====== INIT ======
+    // --- Init ---
     buildInputs();
     renderSheet();
-    onRoute();
+    routeFromHash();
   </script>
 </body>
 </html>
