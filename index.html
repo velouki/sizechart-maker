@@ -1,126 +1,540 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Size Chart Maker</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Size Chart Maker</title>
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  padding: 20px;
-}
+  <!-- Police style "Belle" (proche) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-.container {
-  max-width: 900px;
-  margin: auto;
-}
+  <style>
+    :root{
+      --bg:#f6f3f3;
+      --card:#ffffff;
+      --ink:#1a1a1a;
+      --muted:#6a6a6a;
+      --brand:#7a4b4b;
+      --line:#e6e0e0;
+      --head:#efe6e6;
+    }
 
-h1 {
-  text-align: center;
-}
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+    }
 
-.controls {
-  margin-bottom: 20px;
-  text-align: center;
-}
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-button {
-  padding: 10px 20px;
-  margin: 5px;
-  border: none;
-  background: #7a4b4b;
-  color: white;
-  cursor: pointer;
-  border-radius: 6px;
-}
+    /* ---------- NAV (simple) ---------- */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .link{
+      color:var(--brand);
+      text-decoration:none;
+      font-weight:600;
+    }
+    .link:hover{ text-decoration:underline; }
 
-button:hover {
-  opacity: 0.9;
-}
+    /* ---------- HOME ---------- */
+    .home{
+      min-height: calc(100vh - 60px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .home-card{
+      width:min(900px, 100%);
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:26px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.06);
+    }
+    .home-title{
+      text-align:center;
+      margin: 0 0 18px 0;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .home-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+    .img-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      padding:14px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:180px;
+      transition: transform .08s ease, box-shadow .08s ease;
+    }
+    .img-btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+    .img-btn img{
+      max-width: 78%;
+      height:auto;
+      display:block;
+      image-rendering:auto;
+    }
+    @media (max-width: 720px){
+      .home-grid{ grid-template-columns:1fr; }
+      .img-btn{ min-height:150px; }
+    }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
+    /* ---------- BUILDER LAYOUT ---------- */
+    .builder{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .builder{ grid-template-columns:1fr; }
+    }
 
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: center;
-}
+    .panel{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.06);
+    }
+    .panel h2{
+      margin:0 0 10px 0;
+      font-size:16px;
+    }
 
-th {
-  background: #e8dede;
-}
+    /* ---------- INPUT TABLE ---------- */
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+    }
+    th, td{
+      border-bottom:1px solid var(--line);
+      padding:10px 8px;
+      text-align:center;
+      font-size:13px;
+    }
+    th{
+      background:var(--head);
+      font-weight:700;
+    }
+    td:first-child, th:first-child{
+      text-align:left;
+      padding-left:12px;
+      font-weight:700;
+    }
+    tr:last-child td{ border-bottom:none; }
 
-input {
-  width: 60px;
-  text-align: center;
-}
-</style>
+    .cell{
+      width:72px;
+      padding:7px 8px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      outline:none;
+      text-align:center;
+      font-size:13px;
+    }
+    .cell:focus{
+      border-color: rgba(122,75,75,.55);
+      box-shadow: 0 0 0 3px rgba(122,75,75,.12);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .btn{
+      border:none;
+      background:var(--brand);
+      color:#fff;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .btn.secondary{
+      background:#fff;
+      color:var(--brand);
+      border:1px solid rgba(122,75,75,.35);
+    }
+    .btn:hover{ opacity:.95; }
+
+    /* ---------- PREVIEW 4:5 ---------- */
+    .preview-shell{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .preview{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+
+      /* 4:5 */
+      aspect-ratio: 4 / 5;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+
+    /* zone exportable (on capture celle-là) */
+    .sheet{
+      width:100%;
+      height:100%;
+      padding:18px 18px 16px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .sheet-title{
+      font-family: Allura, cursive;
+      font-size:40px;
+      line-height:1;
+      text-align:center;
+      margin: 4px 0 0 0;
+      color:var(--brand);
+      font-weight:400;
+    }
+
+    .sheet-table{
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+    }
+    .sheet-table table th,
+    .sheet-table table td{
+      font-size:11px;
+      padding:7px 6px;
+    }
+
+    .sheet-note{
+      font-size:10.5px;
+      color:var(--muted);
+      text-align:center;
+      margin-top:2px;
+    }
+
+    .sheet-bottom{
+      display:grid;
+      grid-template-columns: 1.05fr 1.6fr;
+      gap:12px;
+      align-items:start;
+      margin-top:6px;
+      flex:1;
+    }
+    .diagram{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100%;
+      min-height: 220px;
+    }
+    .diagram img{
+      max-width:100%;
+      max-height:100%;
+      height:auto;
+      display:block;
+    }
+
+    .howto{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      height:100%;
+      overflow:hidden;
+    }
+    .howto p{
+      margin:0 0 8px 0;
+      font-size:10.5px;
+      line-height:1.25;
+      color:#2a2a2a;
+    }
+    .howto .strong{
+      font-weight:800;
+      color:#000;
+    }
+    .howto .imp{
+      margin-top:8px;
+      padding-top:8px;
+      border-top:1px dashed var(--line);
+      color:#3a3a3a;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="link" href="#/">Accueil</a>
+      <span style="font-size:12px;color:var(--muted);">Size chart maker</span>
+    </div>
 
-<div class="container">
-  <h1>Guide des tailles – Pantalon</h1>
+    <!-- HOME -->
+    <section id="home" class="home" style="display:none;">
+      <div class="home-card">
+        <h1 class="home-title">Choisis un type de fiche</h1>
+        <div class="home-grid">
+          <button class="img-btn" onclick="go('pants')" title="Pantalon">
+            <img src="assets/btn-pants.png" alt="Pantalon">
+          </button>
+          <button class="img-btn" onclick="go('top')" title="Haut / Robe">
+            <img src="assets/btn-top.png" alt="Haut / Robe">
+          </button>
+        </div>
+      </div>
+    </section>
 
-  <div class="controls">
-    <button onclick="downloadImage()">Télécharger en image</button>
+    <!-- BUILDER (PANTS) -->
+    <section id="builder-pants" style="display:none;">
+      <div class="builder">
+        <!-- INPUTS -->
+        <div class="panel">
+          <h2>Remplis uniquement les chiffres</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Taille</th>
+                <th>Tour de taille (cm)</th>
+                <th>Tour de hanches (cm)</th>
+                <th>Longueur totale (cm)</th>
+                <th>Tour de cheville (cm)</th>
+                <th>Entrejambe (cm)</th>
+              </tr>
+            </thead>
+            <tbody id="input-body"></tbody>
+          </table>
+
+          <div class="actions">
+            <button class="btn" onclick="downloadSheet()">Télécharger la fiche</button>
+            <button class="btn secondary" onclick="clearAll()">Vider les cases</button>
+          </div>
+
+          <p style="margin:10px 0 0 0; font-size:12px; color:var(--muted);">
+            Tu peux laisser des cases vides (ex: pas de XS pour ce modèle).
+          </p>
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="panel preview-shell">
+          <h2>Aperçu (fiche 4:5)</h2>
+
+          <div class="preview">
+            <div id="sheet" class="sheet">
+              <div class="sheet-title">Guide des tailles</div>
+
+              <div class="sheet-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Taille</th>
+                      <th>Tour de taille</th>
+                      <th>Tour de hanches</th>
+                      <th>Longueur totale</th>
+                      <th>Tour de cheville</th>
+                      <th>Entrejambe</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sheet-body"></tbody>
+                </table>
+              </div>
+
+              <div class="sheet-note">
+                Important : Les mesures sont prises à plat. Pour obtenir le tour complet, multipliez par 2. Une variation de 1 à 2 cm peut être constatée.
+              </div>
+
+              <div class="sheet-bottom">
+                <div class="diagram">
+                  <img src="assets/pants-diagram.png" alt="Schéma pantalon">
+                </div>
+                <div class="howto">
+                  <p><span class="strong">1 — TOUR DE TAILLE :</span><br>
+                    Mesurez horizontalement autour de la partie la plus fine de la taille.</p>
+
+                  <p><span class="strong">2 — TOUR DE HANCHES :</span><br>
+                    Trouvez la partie la plus large au niveau des hanches. Mesurez d'un côté à l'autre, puis multipliez cette mesure par deux pour obtenir la taille des hanches.</p>
+
+                  <p><span class="strong">3 — LONGUEUR TOTALE :</span><br>
+                    Mesurez le long de la couture latérale de la ceinture jusqu'à l'ourlet inférieur.</p>
+
+                  <p><span class="strong">4 — TOUR DE CHEVILLE :</span><br>
+                    Mesurez la largeur au niveau de la cheville, d’un bord à l’autre.</p>
+
+                  <p><span class="strong">5 — ENTREJAMBE :</span><br>
+                    Mesurez de la couture de l'entrejambe à la ceinture sur l'avant.</p>
+
+                  <p class="imp"><span class="strong">Important :</span> Les mesures sont prises à plat.<br>
+                    Pour obtenir le tour complet, multipliez par 2.<br>
+                    Une variation de 1 à 2 cm peut être constatée.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <p style="margin:0; font-size:12px; color:var(--muted); text-align:center;">
+            Le bouton “Télécharger la fiche” exporte exactement cet aperçu.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUILDER (TOP placeholder) -->
+    <section id="builder-top" style="display:none;">
+      <div class="panel">
+        <h2>Haut / Robe</h2>
+        <p style="margin:0;color:var(--muted);">Pas encore fait. Clique sur Accueil.</p>
+      </div>
+    </section>
+
   </div>
 
-  <div id="chart">
-    <table>
-      <thead>
-        <tr>
-          <th>Taille</th>
-          <th>Largeur taille (cm)</th>
-          <th>Largeur hanches (cm)</th>
-          <th>Hauteur total (cm)</th>
-          <th>Taille cheville (cm)</th>
-          <th>Entrejambe (cm)</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-      </tbody>
-    </table>
-  </div>
-</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<script>
-const sizes = ["S","M","L","XL","XXL"];
+  <script>
+    // ------- ROUTING SIMPLE -------
+    function show(viewId){
+      document.getElementById('home').style.display = 'none';
+      document.getElementById('builder-pants').style.display = 'none';
+      document.getElementById('builder-top').style.display = 'none';
+      document.getElementById(viewId).style.display = '';
+    }
 
-const tableBody = document.getElementById("tableBody");
+    function go(where){
+      if(where === 'pants') location.hash = '#/pants';
+      if(where === 'top') location.hash = '#/top';
+    }
 
-sizes.forEach(size => {
-  const row = document.createElement("tr");
+    function onRoute(){
+      const h = location.hash || '#/';
+      if(h === '#/' || h === '#') return show('home');
+      if(h.startsWith('#/pants')) return show('builder-pants');
+      if(h.startsWith('#/top')) return show('builder-top');
+      return show('home');
+    }
+    window.addEventListener('hashchange', onRoute);
 
-  row.innerHTML = `
-    <td><strong>${size}</strong></td>
-    <td><input type="number"></td>
-    <td><input type="number"></td>
-    <td><input type="number"></td>
-    <td><input type="number"></td>
-    <td><input type="number"></td>
-  `;
+    // ------- DATA -------
+    const sizes = ["XS","S","M","L","XL","XXL","XXXL"];
+    const cols = ["waist","hips","length","ankle","inseam"];
 
-  tableBody.appendChild(row);
-});
+    const inputBody = document.getElementById('input-body');
+    const sheetBody = document.getElementById('sheet-body');
 
-function downloadImage() {
-  html2canvas(document.getElementById("chart")).then(canvas => {
-    const link = document.createElement("a");
-    link.download = "size-chart.png";
-    link.href = canvas.toDataURL();
-    link.click();
-  });
-}
-</script>
+    const state = {};
+    sizes.forEach(sz => {
+      state[sz] = { waist:"", hips:"", length:"", ankle:"", inseam:"" };
+    });
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    function buildTables(){
+      // Input rows
+      inputBody.innerHTML = '';
+      sizes.forEach(sz => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${sz}</td>
+          ${cols.map(c => `<td><input class="cell" inputmode="numeric" type="number" min="0" step="1"
+               data-size="${sz}" data-col="${c}" value="${state[sz][c]}"></td>`).join('')}
+        `;
+        inputBody.appendChild(tr);
+      });
 
+      // Sheet rows
+      renderSheet();
+    }
+
+    function renderSheet(){
+      sheetBody.innerHTML = '';
+      sizes.forEach(sz => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${sz}</td>
+          <td>${fmt(state[sz].waist)}</td>
+          <td>${fmt(state[sz].hips)}</td>
+          <td>${fmt(state[sz].length)}</td>
+          <td>${fmt(state[sz].ankle)}</td>
+          <td>${fmt(state[sz].inseam)}</td>
+        `;
+        sheetBody.appendChild(tr);
+      });
+    }
+
+    function fmt(v){
+      if(v === null || v === undefined) return "—";
+      const s = String(v).trim();
+      return s === "" ? "—" : s;
+    }
+
+    document.addEventListener('input', (e) => {
+      const t = e.target;
+      if(!t.classList || !t.classList.contains('cell')) return;
+      const sz = t.getAttribute('data-size');
+      const col = t.getAttribute('data-col');
+      state[sz][col] = t.value;
+      renderSheet();
+    });
+
+    async function downloadSheet(){
+      const node = document.getElementById('sheet');
+
+      // Export propre (fond blanc, bonne résolution)
+      const canvas = await html2canvas(node, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true
+      });
+
+      const link = document.createElement('a');
+      link.download = 'guide-des-tailles-pantalon.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function clearAll(){
+      sizes.forEach(sz => cols.forEach(c => state[sz][c] = ""));
+      buildTables();
+    }
+
+    // Init
+    buildTables();
+    onRoute();
+  </script>
 </body>
 </html>
