@@ -224,6 +224,40 @@ input.num:focus{
   box-shadow: 0 0 0 3px rgba(122,139,96,.18);
 }
 
+/* Custom: name + delete */
+.customNameWrap{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+input.nameField{
+  width: 140px;
+  height: 30px;
+  border: 1px solid rgba(17,17,17,.12);
+  border-radius: 8px;
+  padding: 0 10px;
+  text-align:left;
+  font-size: 13px;
+  outline:none;
+  background: #fff;
+  font-weight: 800;
+}
+input.nameField:focus{
+  border-color: rgba(122,139,96,.55);
+  box-shadow: 0 0 0 3px rgba(122,139,96,.18);
+}
+.iconBtn{
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(17,17,17,.14);
+  background: #fff;
+  cursor:pointer;
+  font-weight: 900;
+  line-height: 1;
+}
+.iconBtn:hover{ filter: brightness(0.98); }
+
 .actions{
   display:flex;
   gap: 10px;
@@ -396,8 +430,8 @@ input.num:focus{
   background: rgba(17,17,17,.10);
   margin: 10px 0 10px;
 }
-  /* Plus grand uniquement pour TOP */
-#top, #top-tu{
+/* Plus grand uniquement pour TOP */
+#top, #top-tu, #top-ozel{
   --instTitle: 26px;
   --instBody: 21px;
 }
@@ -439,6 +473,16 @@ input.num:focus{
           <img src="assets/btn-top.png" alt="Haut TU">
           <div class="tuOverlay">T-U</div>
         </button>
+
+        <button class="imgBtn" onclick="go('pants-ozel')" title="Pantalon (ÖZEL)">
+          <img src="assets/btn-pants.png" alt="Pantalon ÖZEL">
+          <div class="tuOverlay">ÖZEL</div>
+        </button>
+
+        <button class="imgBtn" onclick="go('top-ozel')" title="Haut / Robe (ÖZEL)">
+          <img src="assets/btn-top.png" alt="Haut ÖZEL">
+          <div class="tuOverlay">ÖZEL</div>
+        </button>
       </div>
 
       <div class="helper" style="margin-top:14px;">
@@ -471,12 +515,14 @@ function go(page){
     "top": "— Haut / Robe",
     "pants-tu": "— Pantalon (T-U)",
     "top-tu": "— Haut / Robe (T-U)",
+    "pants-ozel": "— Pantalon (ÖZEL)",
+    "top-ozel": "— Haut / Robe (ÖZEL)",
     "home": ""
   };
   crumbSub.textContent = map[page] || "";
 }
 
-/* Builder factory with reference dimensions everywhere */
+/* Builder factory with reference dimensions everywhere (fixed sizes) */
 function buildPage(id, pageLabel, titleCols, image, instructionsHtml, sizes){
   const container = document.getElementById("pagesContainer");
 
@@ -582,7 +628,7 @@ function buildPage(id, pageLabel, titleCols, image, instructionsHtml, sizes){
 
   // store handlers per page id
   window.__pages = window.__pages || {};
-  window.__pages[id] = { state, sizes, titleCols, inputBody, sheetBody };
+  window.__pages[id] = { mode:"fixed", state, sizes, titleCols, inputBody, sheetBody };
 
   // Build inputs
   inputBody.innerHTML = "";
@@ -616,6 +662,113 @@ function buildPage(id, pageLabel, titleCols, image, instructionsHtml, sizes){
   });
 
   renderSheet(id);
+}
+
+/* Builder (custom rows, empty by default) */
+function buildPageCustom(id, pageLabel, titleCols, image, instructionsHtml){
+  const container = document.getElementById("pagesContainer");
+
+  const section = document.createElement("section");
+  section.className = "page";
+  section.id = id;
+
+  const rows = []; // [{id, name, values:{key:""}}]
+
+  section.innerHTML = `
+    <div class="grid">
+
+      <!-- Left: inputs -->
+      <div class="card">
+        <div class="backRow">
+          <div class="backLink" onclick="go('home')">← Retour</div>
+          <div class="mutedSmall"></div>
+        </div>
+
+        <div class="cardTitle">Remplis uniquement les chiffres</div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left;padding-left:14px;">Taille</th>
+                ${titleCols.map(c=>`<th>${c.label}</th>`).join("")}
+              </tr>
+            </thead>
+            <tbody id="${id}-input"></tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button class="btn" onclick="addCustomRow('${id}')">+ Ajouter une ligne</button>
+          <button class="btn btnPrimary" onclick="downloadSheet('${id}')">Télécharger la fiche</button>
+          <button class="btn" onclick="clearCustomPage('${id}')">Vider les cases</button>
+        </div>
+
+        <div class="helper">
+          Tu peux ajouter / renommer / supprimer des lignes.
+        </div>
+      </div>
+
+      <!-- Right: preview -->
+      <div class="card">
+        <div class="previewHeader">
+          <div class="cardTitle">Aperçu (fiche)</div>
+          <div class="hint">Export = exactement cette fiche</div>
+        </div>
+
+        <div class="previewFrame">
+          <div class="previewScaled">
+            <div class="sheet" id="${id}-sheet">
+              <div class="sheetTitle">Guide des tailles</div>
+
+              <div class="sheetTableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;padding-left:14px;">Taille</th>
+                      ${titleCols.map(c=>`<th>${c.label}</th>`).join("")}
+                    </tr>
+                  </thead>
+                  <tbody id="${id}-sheetBody"></tbody>
+                </table>
+              </div>
+
+              <div class="sheetNote">
+                <b>Important :</b> Les mesures sont prises à plat. Pour obtenir le tour complet, multipliez par 2.<br>
+                Une variation de 1 à 2 cm peut être constatée.
+              </div>
+
+              <div class="sheetBottom">
+                <div class="sheetBox diagramBox">
+                  <img src="${image}" alt="Schéma">
+                </div>
+
+                <div class="sheetBox instBox">
+                  <div class="instList">
+                    ${instructionsHtml}
+                    <div class="instSep"></div>
+                    <div style="flex:1;"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /sheet -->
+          </div><!-- /previewScaled -->
+        </div><!-- /previewFrame -->
+      </div>
+
+    </div>
+  `;
+
+  container.appendChild(section);
+
+  const inputBody = document.getElementById(`${id}-input`);
+  const sheetBody = document.getElementById(`${id}-sheetBody`);
+
+  window.__pages = window.__pages || {};
+  window.__pages[id] = { mode:"custom", rows, titleCols, inputBody, sheetBody };
+
+  renderCustom(id);
 }
 
 function renderSheet(id){
@@ -661,6 +814,141 @@ function clearPage(id){
   renderSheet(id);
 }
 
+/* Custom handlers */
+function uid(){
+  return "r" + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+}
+
+function addCustomRow(id){
+  const page = window.__pages[id];
+  if(!page || page.mode !== "custom") return;
+
+  const rowId = uid();
+  const values = {};
+  page.titleCols.forEach(c=> values[c.key] = "");
+
+  page.rows.push({ id: rowId, name: "", values });
+  renderCustom(id);
+}
+
+function deleteCustomRow(pageId, rowId){
+  const page = window.__pages[pageId];
+  if(!page || page.mode !== "custom") return;
+
+  page.rows = page.rows.filter(r=>r.id !== rowId);
+  window.__pages[pageId].rows = page.rows; // keep reference consistent
+  renderCustom(pageId);
+}
+
+function clearCustomPage(id){
+  const page = window.__pages[id];
+  if(!page || page.mode !== "custom") return;
+
+  page.rows.forEach(r=>{
+    page.titleCols.forEach(c=> r.values[c.key] = "");
+  });
+
+  // reset inputs
+  const inputs = page.inputBody.querySelectorAll("input.num");
+  inputs.forEach(i=> i.value = "");
+
+  renderCustom(id);
+}
+
+function renderCustom(id){
+  const page = window.__pages[id];
+  if(!page || page.mode !== "custom") return;
+
+  const { rows, titleCols, inputBody, sheetBody } = page;
+
+  // Inputs table
+  inputBody.innerHTML = "";
+  rows.forEach(row=>{
+    const tr = document.createElement("tr");
+
+    const tdName = document.createElement("td");
+    tdName.className = "sizeCell";
+    tdName.style.width = "200px";
+    tdName.style.paddingLeft = "14px";
+
+    const wrap = document.createElement("div");
+    wrap.className = "customNameWrap";
+
+    const nameInp = document.createElement("input");
+    nameInp.className = "nameField";
+    nameInp.type = "text";
+    nameInp.placeholder = "Nom";
+    nameInp.value = row.name;
+
+    nameInp.addEventListener("input", ()=>{
+      row.name = nameInp.value;
+      renderCustomSheetOnly(id);
+    });
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "iconBtn";
+    delBtn.type = "button";
+    delBtn.title = "Supprimer";
+    delBtn.textContent = "×";
+    delBtn.addEventListener("click", ()=>{
+      deleteCustomRow(id, row.id);
+    });
+
+    wrap.appendChild(nameInp);
+    wrap.appendChild(delBtn);
+    tdName.appendChild(wrap);
+    tr.appendChild(tdName);
+
+    titleCols.forEach(c=>{
+      const td = document.createElement("td");
+      const inp = document.createElement("input");
+      inp.className = "num";
+      inp.inputMode = "numeric";
+      inp.type = "number";
+      inp.min = "0";
+      inp.value = row.values[c.key];
+
+      inp.addEventListener("input", ()=>{
+        row.values[c.key] = inp.value === "" ? "" : inp.value;
+        renderCustomSheetOnly(id);
+      });
+
+      td.appendChild(inp);
+      tr.appendChild(td);
+    });
+
+    inputBody.appendChild(tr);
+  });
+
+  renderCustomSheetOnly(id);
+}
+
+function renderCustomSheetOnly(id){
+  const page = window.__pages[id];
+  if(!page || page.mode !== "custom") return;
+
+  const { rows, titleCols, sheetBody } = page;
+  sheetBody.innerHTML = "";
+
+  rows.forEach(row=>{
+    const tr = document.createElement("tr");
+
+    const tdName = document.createElement("td");
+    tdName.className = "sizeCell";
+    tdName.textContent = (row.name && row.name.trim() !== "") ? row.name.trim() : "—";
+    tr.appendChild(tdName);
+
+    titleCols.forEach(c=>{
+      const td = document.createElement("td");
+      const v = row.values[c.key];
+      td.textContent = (v === "" ? "—" : v);
+      tr.appendChild(td);
+    });
+
+    sheetBody.appendChild(tr);
+  });
+}
+
 async function downloadSheet(id){
   const node = document.getElementById(id + "-sheet");
   const scale = 2;
@@ -677,7 +965,7 @@ async function downloadSheet(id){
   link.click();
 }
 
-/* PAGES (4) */
+/* PAGES (6) */
 
 buildPage(
   "pants",
@@ -831,6 +1119,82 @@ buildPage(
     </div>
   `,
   SIZE_TU
+);
+
+/* ÖZEL (custom rows) */
+buildPageCustom(
+  "pants-ozel",
+  "Pantalon ÖZEL",
+  [
+    {key:"waist",label:"Tour de taille (cm)"},
+    {key:"hips",label:"Tour de hanches (cm)"},
+    {key:"ankle",label:"Tour de cheville (cm)"},
+    {key:"length",label:"Longueur totale (cm)"},
+    {key:"inseam",label:"Entrejambe (cm)"}
+  ],
+  "assets/pants-diagram.png",
+  `
+    <div class="instItem">
+      <b>1 — TOUR DE TAILLE :</b><br>
+      Mesurez horizontalement autour de la partie la plus fine de la taille.
+    </div>
+    <div class="instItem">
+      <b>2 — TOUR DE HANCHES :</b><br>
+      Trouvez la partie la plus large au niveau des hanches. Mesurez d'un côté à l'autre.
+    </div>
+    <div class="instItem">
+      <b>3 — TOUR DE CHEVILLE :</b><br>
+      Mesurez la largeur au niveau de la cheville.
+    </div>
+    <div class="instItem">
+      <b>4 — LONGUEUR TOTALE :</b><br>
+      Mesurez le long de la couture latérale de la ceinture jusqu'à l'ourlet inférieur.
+    </div>
+    <div class="instItem" style="margin-bottom: 8px;">
+      <b>5 — ENTREJAMBE :</b><br>
+      Mesurez depuis la couture de l’entrejambe jusqu’à l’ourlet inférieur, le long de la couture intérieure de la jambe.
+    </div>
+  `
+);
+
+buildPageCustom(
+  "top-ozel",
+  "Haut / Robe ÖZEL",
+  [
+    {key:"shoulders",label:"Largeur des épaules (cm)"},
+    {key:"sleeves",label:"Longueur des manches (cm)"},
+    {key:"chest",label:"Poitrine (cm)"},
+    {key:"length",label:"Longueur totale (cm)"},
+    {key:"waist",label:"Taille (cm)"},
+    {key:"hips",label:"Hanches (cm)"}
+  ],
+  "assets/top-diagram.png",
+  `
+    <div class="instItem">
+      <b>1 — LARGEUR DES ÉPAULES :</b><br>
+      Mesurez horizontalement d’une couture d’épaule à l’autre.
+    </div>
+    <div class="instItem">
+      <b>2 — LONGUEUR DES MANCHES :</b><br>
+      Mesurez depuis la couture de l’épaule jusqu’à l’extrémité de la manche.
+    </div>
+    <div class="instItem">
+      <b>3 — POITRINE :</b><br>
+      Mesurez d’une aisselle à l’autre.
+    </div>
+    <div class="instItem">
+      <b>4 — LONGUEUR TOTALE :</b><br>
+      Mesurez depuis le point le plus haut jusqu’au bas du vêtement.
+    </div>
+    <div class="instItem">
+      <b>5 — TAILLE :</b><br>
+      Mesurez horizontalement au niveau le plus fin de la taille.
+    </div>
+    <div class="instItem" style="margin-bottom: 8px;">
+      <b>6 — HANCHES :</b><br>
+      Mesurez horizontalement au niveau le plus large des hanches.
+    </div>
+  `
 );
 </script>
 
