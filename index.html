@@ -685,8 +685,8 @@ buildPage(
   [
     {key:"waist",label:"Tour de taille (cm)"},
     {key:"hips",label:"Tour de hanches (cm)"},
-    {key:"length",label:"Longueur totale (cm)"},
     {key:"ankle",label:"Tour de cheville (cm)"},
+    {key:"length",label:"Longueur totale (cm)"},
     {key:"inseam",label:"Entrejambe (cm)"}
   ],
   "assets/pants-diagram.png",
@@ -697,19 +697,19 @@ buildPage(
     </div>
     <div class="instItem">
       <b>2 — TOUR DE HANCHES :</b><br>
-      Trouvez la partie la plus large au niveau des hanches. Mesurez d'un côté à l'autre, puis multipliez cette mesure par deux pour obtenir la taille des hanches.
+      Trouvez la partie la plus large au niveau des hanches. Mesurez d'un côté à l'autre.
     </div>
     <div class="instItem">
-      <b>3 — LONGUEUR TOTALE :</b><br>
+      <b>3 — TOUR DE CHEVILLE :</b><br>
+      Mesurez la largeur au niveau de la cheville.
+    </div>
+    <div class="instItem">
+      <b>4 — LONGUEUR TOTALE :</b><br>
       Mesurez le long de la couture latérale de la ceinture jusqu'à l'ourlet inférieur.
-    </div>
-    <div class="instItem">
-      <b>4 — TOUR DE CHEVILLE :</b><br>
-      Mesurez la largeur au niveau de la cheville, d’un bord à l’autre.
     </div>
     <div class="instItem" style="margin-bottom: 8px;">
       <b>5 — ENTREJAMBE :</b><br>
-      Mesurez de la couture de l'entrejambe à la ceinture sur l'avant.
+      Mesurez depuis la couture de l’entrejambe jusqu’à l’ourlet inférieur, le long de la couture intérieure de la jambe.
     </div>
   `,
   SIZES_FULL
@@ -721,8 +721,8 @@ buildPage(
   [
     {key:"waist",label:"Tour de taille (cm)"},
     {key:"hips",label:"Tour de hanches (cm)"},
-    {key:"length",label:"Longueur totale (cm)"},
     {key:"ankle",label:"Tour de cheville (cm)"},
+    {key:"length",label:"Longueur totale (cm)"},
     {key:"inseam",label:"Entrejambe (cm)"}
   ],
   "assets/pants-diagram.png",
@@ -733,19 +733,19 @@ buildPage(
     </div>
     <div class="instItem">
       <b>2 — TOUR DE HANCHES :</b><br>
-      Trouvez la partie la plus large au niveau des hanches. Mesurez d'un côté à l'autre, puis multipliez cette mesure par deux pour obtenir la taille des hanches.
+      Trouvez la partie la plus large au niveau des hanches. Mesurez d'un côté à l'autre.
     </div>
     <div class="instItem">
-      <b>3 — LONGUEUR TOTALE :</b><br>
+      <b>3 — TOUR DE CHEVILLE :</b><br>
+      Mesurez la largeur au niveau de la cheville.
+    </div>
+    <div class="instItem">
+      <b>4 — LONGUEUR TOTALE :</b><br>
       Mesurez le long de la couture latérale de la ceinture jusqu'à l'ourlet inférieur.
-    </div>
-    <div class="instItem">
-      <b>4 — TOUR DE CHEVILLE :</b><br>
-      Mesurez la largeur au niveau de la cheville, d’un bord à l’autre.
     </div>
     <div class="instItem" style="margin-bottom: 8px;">
       <b>5 — ENTREJAMBE :</b><br>
-      Mesurez de la couture de l'entrejambe à la ceinture sur l'avant.
+      Mesurez depuis la couture de l’entrejambe jusqu’à l’ourlet inférieur, le long de la couture intérieure de la jambe.
     </div>
   `,
   SIZE_TU
@@ -756,27 +756,37 @@ buildPage(
   "Haut / Robe",
   [
     {key:"shoulders",label:"Largeur des épaules (cm)"},
+    {key:"sleeves",label:"Longueur des manches (cm)"},
     {key:"chest",label:"Poitrine (cm)"},
-    {key:"length",label:"Longueur (cm)"},
-    {key:"sleeves",label:"Longueur des manches (cm)"}
+    {key:"length",label:"Longueur totale (cm)"},
+    {key:"waist",label:"Taille (cm)"},
+    {key:"hips",label:"Hanches (cm)"}
   ],
   "assets/top-diagram.png",
   `
     <div class="instItem">
       <b>1 — LARGEUR DES ÉPAULES :</b><br>
-      Mesurez d’une couture d’épaule à l’autre.
+      Mesurez horizontalement d’une couture d’épaule à l’autre.
     </div>
     <div class="instItem">
-      <b>2 — POITRINE :</b><br>
+      <b>2 — LONGUEUR DES MANCHES :</b><br>
+      Mesurez depuis la couture de l’épaule jusqu’à l’extrémité de la manche.
+    </div>
+    <div class="instItem">
+      <b>3 — POITRINE :</b><br>
       Mesurez d’une aisselle à l’autre.
     </div>
     <div class="instItem">
-      <b>3 — LONGUEUR :</b><br>
-      Mesurez de l’épaule à l’ourlet.
+      <b>4 — LONGUEUR TOTALE :</b><br>
+      Mesurez depuis le point le plus haut jusqu’au bas du vêtement.
+    </div>
+    <div class="instItem">
+      <b>5 — TAILLE :</b><br>
+      Mesurez horizontalement au niveau le plus fin de la taille.
     </div>
     <div class="instItem" style="margin-bottom: 8px;">
-      <b>4 — LONGUEUR DES MANCHES :</b><br>
-      Mesurez de l’épaule au poignet.
+      <b>6 — HANCHES :</b><br>
+      Mesurez horizontalement au niveau le plus large des hanches.
     </div>
   `,
   SIZES_FULL
@@ -787,27 +797,37 @@ buildPage(
   "Haut / Robe TU",
   [
     {key:"shoulders",label:"Largeur des épaules (cm)"},
+    {key:"sleeves",label:"Longueur des manches (cm)"},
     {key:"chest",label:"Poitrine (cm)"},
-    {key:"length",label:"Longueur (cm)"},
-    {key:"sleeves",label:"Longueur des manches (cm)"}
+    {key:"length",label:"Longueur totale (cm)"},
+    {key:"waist",label:"Taille (cm)"},
+    {key:"hips",label:"Hanches (cm)"}
   ],
   "assets/top-diagram.png",
   `
     <div class="instItem">
       <b>1 — LARGEUR DES ÉPAULES :</b><br>
-      Mesurez d’une couture d’épaule à l’autre.
+      Mesurez horizontalement d’une couture d’épaule à l’autre.
     </div>
     <div class="instItem">
-      <b>2 — POITRINE :</b><br>
+      <b>2 — LONGUEUR DES MANCHES :</b><br>
+      Mesurez depuis la couture de l’épaule jusqu’à l’extrémité de la manche.
+    </div>
+    <div class="instItem">
+      <b>3 — POITRINE :</b><br>
       Mesurez d’une aisselle à l’autre.
     </div>
     <div class="instItem">
-      <b>3 — LONGUEUR :</b><br>
-      Mesurez de l’épaule à l’ourlet.
+      <b>4 — LONGUEUR TOTALE :</b><br>
+      Mesurez depuis le point le plus haut jusqu’au bas du vêtement.
+    </div>
+    <div class="instItem">
+      <b>5 — TAILLE :</b><br>
+      Mesurez horizontalement au niveau le plus fin de la taille.
     </div>
     <div class="instItem" style="margin-bottom: 8px;">
-      <b>4 — LONGUEUR DES MANCHES :</b><br>
-      Mesurez de l’épaule au poignet.
+      <b>6 — HANCHES :</b><br>
+      Mesurez horizontalement au niveau le plus large des hanches.
     </div>
   `,
   SIZE_TU
